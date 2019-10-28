@@ -12,10 +12,18 @@ namespace TaskManager.ViewModels
 {
     public class ShellViewModel : Screen
     {
+
         private DateTime currentDate = DateTime.Now;
         public BindableCollection<TaskModel> taskList { get; set; }
         public string ContentNew { get; set; }
         private TaskModel selectedTask;
+        private string filePath = "taskmanager.json";
+
+        public DateTime CurrentDate
+        {
+            get { return currentDate; }
+        }
+
 
         public TaskModel SelectedTask
         {
@@ -35,16 +43,16 @@ namespace TaskManager.ViewModels
         {
 
             taskList = new BindableCollection<TaskModel>();
-            using (StreamReader reader = new StreamReader("taskmanager.json"))
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                string json = reader.ReadToEnd();
+                string tasksObject = reader.ReadToEnd();
 
-                if (string.IsNullOrWhiteSpace(json))
+                if (string.IsNullOrWhiteSpace(tasksObject))
                 {
                     return;
                 }
 
-                var tasks = JsonConvert.DeserializeObject<List<TaskModel>>(json);
+                var tasks = JsonConvert.DeserializeObject<List<TaskModel>>(tasksObject);
 
                 foreach (var task in tasks)
                 {
@@ -54,11 +62,6 @@ namespace TaskManager.ViewModels
             }
         }
         
-
-        public DateTime CurrentDate
-        {
-            get { return currentDate; }
-        }
 
 
         public void AddNewTask(string contentNew)
@@ -83,22 +86,24 @@ namespace TaskManager.ViewModels
            
             taskList.Add(newTask);
             NotifyOfPropertyChange(() => taskList);
-            string newTaskJson = JsonConvert.SerializeObject(taskList);
-            //write to file
-            File.WriteAllText("taskmanager.json", newTaskJson);
+            SaveToFile(taskList);
 
         }
-
-        public void DeleteTask()
+        public void DeleteTask(TaskModel task)
         {
-            //if (task == null)
-            //{ 
-            //    return;
-            //}
-            //taskList.Remove(task);
-            //NotifyOfPropertyChange(() => taskList);
+            if (task == null)
+            {
+                return;
+            }
+            taskList.Remove(task);
+            NotifyOfPropertyChange(() => taskList);
+            SaveToFile(taskList);
+        }
 
-            MessageBox.Show("Working");
+        private void SaveToFile(BindableCollection<TaskModel> list)
+        {
+            string newTaskJson = JsonConvert.SerializeObject(list);
+            File.WriteAllText(filePath, newTaskJson);
         }
 
 
