@@ -10,13 +10,13 @@ using TaskManager.Models;
 
 namespace TaskManager.ViewModels
 {
-    public class ShellViewModel : Screen
+    public class TaskViewModel : Screen
     {
 
         private DateTime currentDate = DateTime.Now;
-        public BindableCollection<TaskModel> taskList { get; set; }
+        public BindableCollection<Task> taskList { get; set; }
         public string ContentNew { get; set; }
-        private TaskModel selectedTask;
+        private Task selectedTask;
         private string filePath = "taskmanager.json";
 
         public DateTime CurrentDate
@@ -25,7 +25,7 @@ namespace TaskManager.ViewModels
         }
 
 
-        public TaskModel SelectedTask
+        public Task SelectedTask
         {
             get { return selectedTask; }
             set
@@ -34,7 +34,7 @@ namespace TaskManager.ViewModels
             }
         }
 
-        public ShellViewModel()
+        public TaskViewModel()
         {
             Load();
         }
@@ -42,7 +42,7 @@ namespace TaskManager.ViewModels
         private void Load()
         {
 
-            taskList = new BindableCollection<TaskModel>();
+            taskList = new BindableCollection<Task>();
             using (StreamReader reader = new StreamReader(filePath))
             {
                 string tasksObject = reader.ReadToEnd();
@@ -52,7 +52,7 @@ namespace TaskManager.ViewModels
                     return;
                 }
 
-                var tasks = JsonConvert.DeserializeObject<List<TaskModel>>(tasksObject);
+                var tasks = JsonConvert.DeserializeObject<List<Task>>(tasksObject);
 
                 foreach (var task in tasks)
                 {
@@ -74,7 +74,7 @@ namespace TaskManager.ViewModels
             }
 
            
-            var newTask = new TaskModel(ContentNew);
+            var newTask = new Task(ContentNew);
             if(taskList.Count != 0)
             {
                 newTask.Id = taskList.Max(x => x.Id) + 1;
@@ -89,7 +89,7 @@ namespace TaskManager.ViewModels
             SaveToFile(taskList);
 
         }
-        public void DeleteTask(TaskModel task)
+        public void DeleteTask(Task task)
         {
             if (task == null)
             {
@@ -100,7 +100,7 @@ namespace TaskManager.ViewModels
             SaveToFile(taskList);
         }
 
-        private void SaveToFile(BindableCollection<TaskModel> list)
+        private void SaveToFile(BindableCollection<Task> list)
         {
             string newTaskJson = JsonConvert.SerializeObject(list);
             File.WriteAllText(filePath, newTaskJson);
