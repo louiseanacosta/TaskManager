@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -12,40 +13,47 @@ namespace TaskManager.ViewModels
     public class ShellViewModel : Screen
     {
         private DateTime currentDate = DateTime.Now;
-        public BindableCollection<Task> taskList { get; set; }
+        public BindableCollection<TaskModel> taskList { get; set; }
         public string ContentNew { get; set; }
+        private TaskModel selectedTask;
+
+        public TaskModel SelectedTask
+        {
+            get { return selectedTask; }
+            set
+            {
+                selectedTask = value;
+            }
+        }
+
         public ShellViewModel()
         {
-            taskList = new BindableCollection<Task>
-            {
-
-                new Task (1, "Test", false, Convert.ToDateTime("2019-12-12")),
-                new Task (2, "Test1", true, Convert.ToDateTime("2019-12-13")),
-                new Task (3, "Test2", true, Convert.ToDateTime("2019-12-13")),
-                new Task (4, "Test3", false, Convert.ToDateTime("2019-12-13")),
-                new Task (5, "Test4", true, Convert.ToDateTime("2019-12-13"))
-
-            };
-
-            //
-            //var filePath = "taskmanager.json";
-            //// Read existing json data
-            //var jsonData = System.IO.File.ReadAllText(filePath);
-            //// De-serialize to object or create new list
-            //var TaskList = JsonConvert.DeserializeObject<List<Task>>(jsonData)
-            //                      ?? new List<Task>();
-
-            //// Add any new employees
-            //TaskList.Add(
-            //   new Task(1, "Test", false, Convert.ToDateTime("2019-12-12")),
-            //   new Task(2, "Test1", true, Convert.ToDateTime("2019-12-13"))
-            //   );
-
-
-            //// Update json data string
-            //jsonData = JsonConvert.SerializeObject(TaskList);
-            //System.IO.File.WriteAllText(filePath, jsonData);
+            Load();
         }
+
+        private void Load()
+        {
+
+            taskList = new BindableCollection<TaskModel>();
+            using (StreamReader reader = new StreamReader("taskmanager.json"))
+            {
+                string json = reader.ReadToEnd();
+
+                if (string.IsNullOrWhiteSpace(json))
+                {
+                    return;
+                }
+
+                var tasks = JsonConvert.DeserializeObject<List<TaskModel>>(json);
+
+                foreach (var task in tasks)
+                {
+                    taskList.Add(task);
+                }
+
+            }
+        }
+        
 
         public DateTime CurrentDate
         {
@@ -55,26 +63,44 @@ namespace TaskManager.ViewModels
 
         public void AddNewTask(string contentNew)
         {
-            //taskList.Add(new Task(3, "Added", false, Convert.ToDateTime("2020-5-5"), false));
-            if(string.IsNullOrWhiteSpace(ContentNew))
+            // check if empty
+            if (string.IsNullOrWhiteSpace(ContentNew))
             {
+                MessageBox.Show("Please enter a name for the new task","Error");
                 return;
             }
 
-            taskList.Add(new Task(ContentNew));
+           
+            var newTask = new TaskModel(ContentNew);
+            if(taskList.Count != 0)
+            {
+                newTask.Id = taskList.Max(x => x.Id) + 1;
+            } 
+            else
+            {
+                newTask.Id = 1;
+            }
+           
+            taskList.Add(newTask);
             NotifyOfPropertyChange(() => taskList);
+            string newTaskJson = JsonConvert.SerializeObject(taskList);
+            //write to file
+            File.WriteAllText("taskmanager.json", newTaskJson);
+
         }
 
         public void DeleteTask()
         {
-            //if (SelectedTask == null)
-            //{
+            //if (task == null)
+            //{ 
             //    return;
             //}
-            //taskList.Remove(SelectedTask);
+            //taskList.Remove(task);
             //NotifyOfPropertyChange(() => taskList);
 
             MessageBox.Show("Working");
         }
+
+
     }
 }
