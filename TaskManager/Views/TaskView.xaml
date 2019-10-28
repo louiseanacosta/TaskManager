@@ -6,8 +6,10 @@
         xmlns:System="clr-namespace:System;assembly=mscorlib"
         xmlns:cal="http://www.caliburnproject.org"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen" FontSize="14" FontFamily="Lucida Sans"
-        Title="TaskManager" Height="450" Width="450">
-    
+        Title="TaskManager" Height="450" Width="450"
+    cal:Message.Attach="[Event Closing] = [Action SaveToFile()]">
+
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20" />
@@ -32,7 +34,8 @@
         <!--Task List-->
         <DataGrid x:Name="taskList" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Margin="0,10,0,0" 
                   AutoGenerateColumns="false" CanUserAddRows="false" GridLinesVisibility="None" 
-                  SelectedItem="{Binding SelectedTask, Mode=TwoWay}">
+                  SelectedItem="{Binding SelectedTask, Mode=TwoWay}"
+                  cal:Message.Attach="[Event CellEditEnding]=[Action SaveToFile()]">
           
             <DataGrid.CellStyle>
                 <Style TargetType="{x:Type DataGridCell}">

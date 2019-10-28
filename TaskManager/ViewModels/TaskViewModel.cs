@@ -36,13 +36,13 @@ namespace TaskManager.ViewModels
 
         public TaskViewModel()
         {
-            Load();
+            taskList = new BindableCollection<Task>();
+            ReadFile();
+            
         }
 
-        private void Load()
+        private void ReadFile()
         {
-
-            taskList = new BindableCollection<Task>();
             using (StreamReader reader = new StreamReader(filePath))
             {
                 string tasksObject = reader.ReadToEnd();
@@ -60,6 +60,7 @@ namespace TaskManager.ViewModels
                 }
 
             }
+
         }
         
 
@@ -86,7 +87,7 @@ namespace TaskManager.ViewModels
            
             taskList.Add(newTask);
             NotifyOfPropertyChange(() => taskList);
-            SaveToFile(taskList);
+            SaveToFile();
 
         }
         public void DeleteTask(Task task)
@@ -97,14 +98,20 @@ namespace TaskManager.ViewModels
             }
             taskList.Remove(task);
             NotifyOfPropertyChange(() => taskList);
-            SaveToFile(taskList);
+            SaveToFile();
         }
 
-        private void SaveToFile(BindableCollection<Task> list)
+        public void SaveToFile()
         {
-            string newTaskJson = JsonConvert.SerializeObject(list);
+            if (taskList == null)
+            {
+                return;
+            }
+            string newTaskJson = JsonConvert.SerializeObject(taskList);
             File.WriteAllText(filePath, newTaskJson);
         }
+
+        
 
 
     }
