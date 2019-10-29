@@ -113,8 +113,15 @@ namespace TaskManager.ViewModels
         {
             if(task != null)
             {
-                // remove task from list
-                taskList.Remove(task);
+                try
+                {
+                    // remove task from list
+                    taskList.Remove(task);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Error deleting task", "Error");
+                }
                 SaveToFile();
             }
         }
@@ -122,32 +129,29 @@ namespace TaskManager.ViewModels
 
         #region File Access Methods
         /// <summary>
-        /// Saves list of tasks to File by first Converting to JSON object
+        /// Saves list of tasks to File as JSON object
         /// </summary>
         public void SaveToFile()
         {
-            // check
-            if (taskList == null)
+            if (taskList != null)
             {
-                return;
+                try
+                {
+                    // convert to json object
+                    string serializedString = JsonConvert.SerializeObject(taskList, Formatting.Indented);
+                    // write to file - if file does not exist, create new. if exists, overwrite.
+                    File.WriteAllText(filePath, serializedString);
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("Failed To Save", "Error");
+                }
             }
-
-            try
-            {
-                // convert to json object
-                string serializedString = JsonConvert.SerializeObject(taskList, Formatting.Indented);
-                // write to file - if file does not exist, create new. if exists, overwrite.
-                File.WriteAllText(filePath, serializedString);
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Failed To Save", "Error");
-            }
+            
         }
 
         /// <summary>
-        /// Reads File From JSON file by deserializing JSON from the file to a list
-        /// iterate through the objects from the list and add to the task list
+        /// Reads list of tasks from JSON file
         /// </summary>
         private void ReadFile()
         {
@@ -180,6 +184,7 @@ namespace TaskManager.ViewModels
                 }
                 catch (Exception)
                 {
+                    MessageBox.Show("Error Reading File", "Error");
                     return;
                 }
             }
