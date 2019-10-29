@@ -20,6 +20,11 @@ namespace TaskManager.Models
 
         public Task() { }
 
+        public Task(string content)
+        {
+            Content = content;
+        }
+
         public Task(int id, string content, bool isComplete, DateTime dueDate)
         {
             Id = id;
@@ -27,11 +32,5 @@ namespace TaskManager.Models
             IsComplete = isComplete;
             DueDate = dueDate;
         }
-
-        public Task(string content)
-        {
-            Content = content;
-        }
-
     }
 }

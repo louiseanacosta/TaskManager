@@ -22,7 +22,7 @@ namespace TaskManager.ViewModels
         private string contentNew; 
         private string filePath = "taskmanager.json"; // file path where list of tasks will be saved
 
-        // list of tasks
+        // list of tasks getter and setter
         public BindableCollection<Task> TaskList
         {
             get { return taskList; }
@@ -37,7 +37,7 @@ namespace TaskManager.ViewModels
             }
         }
 
-        // content for new task
+        // content for new task getter and setter
         public string ContentNew
         {
             get { return contentNew; }
@@ -62,7 +62,7 @@ namespace TaskManager.ViewModels
 
 
         /// <summary>
-        /// Getter for the current date
+        /// Get current date
         /// </summary>
         public DateTime CurrentDate
         {
