@@ -89,7 +89,7 @@ namespace TaskManager.ViewModels
 
             // create new task object
             var newTask = new Task(ContentNew);
-            // check if list is empty to assign id to new task
+            // assign id to new task
             if (taskList.Count != 0) // list is not empty, current id = last id + 1
             {
                 newTask.Id = taskList.Max(x => x.Id) + 1;
@@ -111,14 +111,12 @@ namespace TaskManager.ViewModels
         /// <param name="task">Task object to be deleted</param>
         public void DeleteTask(Task task)
         {
-            // check
-            if (task == null)
+            if(task != null)
             {
-                return;
+                // remove task from list
+                taskList.Remove(task);
+                SaveToFile();
             }
-            // remove task from list
-            taskList.Remove(task);
-            SaveToFile();
         }
         #endregion
 
@@ -137,9 +135,9 @@ namespace TaskManager.ViewModels
             try
             {
                 // convert to json object
-                string newTaskJson = JsonConvert.SerializeObject(taskList, Formatting.Indented);
+                string serializedString = JsonConvert.SerializeObject(taskList, Formatting.Indented);
                 // write to file - if file does not exist, create new. if exists, overwrite.
-                File.WriteAllText(filePath, newTaskJson);
+                File.WriteAllText(filePath, serializedString);
             }
             catch (Exception)
             {
@@ -162,9 +160,9 @@ namespace TaskManager.ViewModels
             using (StreamReader reader = new StreamReader(filePath))
             {
                 // read file
-                string tasksObject = reader.ReadToEnd();
+                string jsonString = reader.ReadToEnd();
                 // check if empty
-                if (string.IsNullOrWhiteSpace(tasksObject))
+                if (string.IsNullOrWhiteSpace(jsonString))
                 {
                     return;
                 }
@@ -172,9 +170,9 @@ namespace TaskManager.ViewModels
                 try
                 {
                     // convert json object to list of task objects
-                    var tasks = JsonConvert.DeserializeObject<List<Task>>(tasksObject);
+                    var deserializedList = JsonConvert.DeserializeObject<List<Task>>(jsonString);
                     // add each task to task list
-                    foreach (var task in tasks)
+                    foreach (var task in deserializedList)
                     {
                         taskList.Add(task);
                     }
