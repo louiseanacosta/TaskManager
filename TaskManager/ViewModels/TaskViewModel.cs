@@ -13,9 +13,21 @@ namespace TaskManager.ViewModels
 {
     public class TaskViewModel : Screen
     {
-        public BindableCollection<Task> taskList { get; set; }
-        //public string ContentNew { get; set; }
+        //public BindableCollection<Task> taskList { get; set; }
+        private BindableCollection<Task> taskList;
         private string contentNew;
+
+
+        public BindableCollection<Task> TaskList
+        {
+            get { return taskList; }
+            set
+            {
+                taskList = value;
+                NotifyOfPropertyChange(() => taskList);
+
+            }
+        }
 
         public string ContentNew
         {
@@ -170,10 +182,5 @@ namespace TaskManager.ViewModels
                 }
             }
         }
-
-
-
-
-
     }
 }
