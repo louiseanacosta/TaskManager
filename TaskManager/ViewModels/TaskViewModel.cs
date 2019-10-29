@@ -14,7 +14,19 @@ namespace TaskManager.ViewModels
     public class TaskViewModel : Screen
     {
         public BindableCollection<Task> taskList { get; set; }
-        public string ContentNew { get; set; }
+        //public string ContentNew { get; set; }
+        private string contentNew;
+
+        public string ContentNew
+        {
+            get { return contentNew; }
+            set
+            {
+                contentNew = value;
+                NotifyOfPropertyChange(() => contentNew);
+            }
+        }
+
         private string filePath = "taskmanager.json"; // file path where list of tasks will be saved
 
         /// <summary>
@@ -92,6 +104,7 @@ namespace TaskManager.ViewModels
             // update ui
             NotifyOfPropertyChange(() => taskList);
             SaveToFile();
+            ContentNew = string.Empty;
         }
 
         /// <summary>
@@ -134,6 +147,11 @@ namespace TaskManager.ViewModels
         /// </summary>
         private void ReadFile()
         {
+            // check if file exists
+            if (!File.Exists(filePath))
+            {
+                return;
+            }
             using (StreamReader reader = new StreamReader(filePath))
             {
                 // read file
