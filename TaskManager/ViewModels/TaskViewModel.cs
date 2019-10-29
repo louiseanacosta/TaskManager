@@ -122,22 +122,31 @@ namespace TaskManager.ViewModels
 
         #region File Access Methods
         /// <summary>
-        /// Saves list of tasks to file as json object
+        /// Saves list of tasks to File by first Converting to JSON object
         /// </summary>
         public void SaveToFile()
         {
-          
-            if (taskList != null) {
-                var serializedString = SerializeJson(taskList);
+            // check
+            if (taskList == null)
+            {
+                return;
+            }
+
+            try
+            {
+                // convert to json object
+                string serializedString = JsonConvert.SerializeObject(taskList, Formatting.Indented);
                 // write to file - if file does not exist, create new. if exists, overwrite.
                 File.WriteAllText(filePath, serializedString);
             }
-            
+            catch (Exception)
+            {
+                MessageBox.Show("Failed To Save", "Error");
+            }
         }
 
         /// <summary>
-        /// Reads File From JSON file 
-        /// by deserializing JSON from the file to a list
+        /// Reads File From JSON file by deserializing JSON from the file to a list
         /// iterate through the objects from the list and add to the task list
         /// </summary>
         private void ReadFile()
@@ -152,65 +161,29 @@ namespace TaskManager.ViewModels
             {
                 // read file
                 string jsonString = reader.ReadToEnd();
-                var deserializedList = DeserializeJson(jsonString);
-                // add each task to task list
-                if (deserializedList.Count > 0)
+                // check if empty
+                if (string.IsNullOrWhiteSpace(jsonString))
                 {
+                    return;
+                }
+
+                try
+                {
+                    // convert json object to list of task objects
+                    var deserializedList = JsonConvert.DeserializeObject<List<Task>>(jsonString);
+                    // add each task to task list
                     foreach (var task in deserializedList)
                     {
                         taskList.Add(task);
                     }
+
                 }
-            }
-        }
-        #endregion
-
-        /// <summary>
-        /// Serializes task list to json object
-        /// </summary>
-        /// <param name="lists"></param>
-        /// <returns></returns>
-        #region Helper Methods
-        private static string SerializeJson(BindableCollection<Task> lists)
-        {
-            var serializedString = string.Empty;
-
-            try
-            {
-                // convert to json object
-                serializedString = JsonConvert.SerializeObject(lists, Formatting.Indented);
-                
-            }
-            catch (Exception)
-            {
-                MessageBox.Show("Failed To Save", "Error");
-            }
-            return serializedString;
-        }
-
-        /// <summary>
-        /// Deserializes JSON string
-        /// </summary>
-        /// <param name="jsonString"></param>
-        /// <returns>List<Task></returns>
-        private static List<Task> DeserializeJson(string jsonString)
-        {
-            var deserializedList = new List<Task>();
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(jsonString))
+                catch (Exception)
                 {
-                    // convert json object to list of task objects
-                    deserializedList = JsonConvert.DeserializeObject<List<Task>>(jsonString);
+                    return;
                 }
             }
-            catch (Exception)
-            {
-                MessageBox.Show("Error occured in JSON Deserialization", "Error");
-            }
-            return deserializedList;
         }
-
         #endregion
     }
 }
