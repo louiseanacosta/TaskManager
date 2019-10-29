@@ -40,8 +40,8 @@ Date: October 28, 2019
                     Orientation="Horizontal"
                     VerticalAlignment="Bottom" HorizontalAlignment="Right"
                     Margin="5,20,0,0">
-            <TextBlock  x:Name="DayInt"
-                        Text="{Binding DayInt,Mode=OneWay}"
+            <TextBlock  
+                        Text="{Binding CurrentDate, Mode=OneWay, StringFormat='dd'}"
                         Foreground="Black" 
                         FontSize="30"
                         />
@@ -50,9 +50,9 @@ Date: October 28, 2019
                         VerticalAlignment="Bottom"
                         Padding="5,0,0,10"
                         >                
-                <Run Text="{Binding DayNameString,Mode=OneWay}"/>
+                <Run Text="{Binding CurrentDate, Mode=OneWay, StringFormat='dddd'}"/>
                 <LineBreak />
-                <Run Text="{Binding MonthAndYearString,Mode=OneWay}" />
+                <Run Text="{Binding CurrentDate, Mode=OneWay, StringFormat='MMMM yyyy'}" />
             </TextBlock>
         </StackPanel>
         <!--Add New Task-->

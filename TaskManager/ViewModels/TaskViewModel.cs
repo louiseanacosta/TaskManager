@@ -61,44 +61,17 @@ namespace TaskManager.ViewModels
         }
 
 
-        #region Current Date Getters
         /// <summary>
-        /// Gets the current day of the month
+        /// Getter for the current date
         /// </summary>
-        public string DayInt
+        public DateTime CurrentDate
         {
             get
             {
-               return DateTime.Today.Day.ToString();
+                return DateTime.Now;
             }
         }
-
-        /// <summary>
-        /// Gets the current day of the week
-        /// </summary>
-        public string DayNameString
-        {
-            get
-            {
-                return DateTime.Today.DayOfWeek.ToString();
-            }
-        }
-
-        /// <summary>
-        ///  Gets the current month and year
-        /// </summary>
-        public string MonthAndYearString
-        {
-            get
-            {
-                var month = DateTime.Now.ToString("MMMM");
-                var year = DateTime.Now.Year.ToString();
-
-                return string.Format("{0}, {1}", month, year);
-            }
-        }
-        #endregion
-
+        
         #region Data Manipulation Methods
         /// <summary>
         /// Adds new task to task list and saves to file
@@ -109,7 +82,7 @@ namespace TaskManager.ViewModels
             // check if empty
             if (string.IsNullOrWhiteSpace(ContentNew))
             {
-                // display error
+                // display error message
                 MessageBox.Show("Please enter a name for the new task", "Error");
                 return;
             }
@@ -160,10 +133,18 @@ namespace TaskManager.ViewModels
             {
                 return;
             }
-            // convert to json object
-            string newTaskJson = JsonConvert.SerializeObject(taskList);
-            // write to file - if file does not exist, create new. if exists, overwrite.
-            File.WriteAllText(filePath, newTaskJson);
+
+            try
+            {
+                // convert to json object
+                string newTaskJson = JsonConvert.SerializeObject(taskList, Formatting.Indented);
+                // write to file - if file does not exist, create new. if exists, overwrite.
+                File.WriteAllText(filePath, newTaskJson);
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Failed To Save", "Error");
+            }
         }
 
         /// <summary>
@@ -177,6 +158,7 @@ namespace TaskManager.ViewModels
             {
                 return;
             }
+
             using (StreamReader reader = new StreamReader(filePath))
             {
                 // read file
@@ -186,12 +168,21 @@ namespace TaskManager.ViewModels
                 {
                     return;
                 }
-                // conver json object to list of task objects
-                var tasks = JsonConvert.DeserializeObject<List<Task>>(tasksObject);
-                // add each task to task list
-                foreach (var task in tasks)
+
+                try
                 {
-                    taskList.Add(task);
+                    // convert json object to list of task objects
+                    var tasks = JsonConvert.DeserializeObject<List<Task>>(tasksObject);
+                    // add each task to task list
+                    foreach (var task in tasks)
+                    {
+                        taskList.Add(task);
+                    }
+
+                }
+                catch (Exception)
+                {
+                    return;
                 }
             }
         }
