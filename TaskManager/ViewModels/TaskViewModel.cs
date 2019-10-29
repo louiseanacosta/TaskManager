@@ -1,4 +1,9 @@
-﻿using Caliburn.Micro;
+﻿/* Task Manager
+ * Author: Louise Acosta
+ * Date: October 28, 2019
+ */
+
+using Caliburn.Micro;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -13,34 +18,50 @@ namespace TaskManager.ViewModels
 {
     public class TaskViewModel : Screen
     {
-        //public BindableCollection<Task> taskList { get; set; }
-        private BindableCollection<Task> taskList;
-        private string contentNew;
+        private BindableCollection<Task> taskList; 
+        private string contentNew; 
+        private string filePath = "taskmanager.json"; // file path where list of tasks will be saved
 
-
+        // list of tasks
         public BindableCollection<Task> TaskList
         {
             get { return taskList; }
             set
             {
-                taskList = value;
+                if (taskList != value)
+                {
+                    taskList = value;
+                }
                 NotifyOfPropertyChange(() => taskList);
 
             }
         }
 
+        // content for new task
         public string ContentNew
         {
             get { return contentNew; }
             set
             {
-                contentNew = value;
+                if (contentNew != value)
+                {
+                    contentNew = value;
+                }
                 NotifyOfPropertyChange(() => contentNew);
             }
         }
 
-        private string filePath = "taskmanager.json"; // file path where list of tasks will be saved
+        // constructor
+        public TaskViewModel()
+        {
+            // create an empty task list
+            taskList = new BindableCollection<Task>();
+            // read json file from json file
+            ReadFile();
+        }
 
+
+        #region Current Date Getters
         /// <summary>
         /// Gets the current day of the month
         /// </summary>
@@ -76,15 +97,9 @@ namespace TaskManager.ViewModels
                 return string.Format("{0}, {1}", month, year);
             }
         }
+        #endregion
 
-        public TaskViewModel()
-        {
-            // create an empty task list
-            taskList = new BindableCollection<Task>();
-            // read json file from json file
-            ReadFile();
-        }
-
+        #region Data Manipulation Methods
         /// <summary>
         /// Adds new task to task list and saves to file
         /// </summary>
@@ -113,8 +128,6 @@ namespace TaskManager.ViewModels
 
             // add to list
             taskList.Add(newTask);
-            // update ui
-            NotifyOfPropertyChange(() => taskList);
             SaveToFile();
             ContentNew = string.Empty;
         }
@@ -132,11 +145,11 @@ namespace TaskManager.ViewModels
             }
             // remove task from list
             taskList.Remove(task);
-            // update ui
-            NotifyOfPropertyChange(() => taskList);
             SaveToFile();
         }
+        #endregion
 
+        #region File Access Methods
         /// <summary>
         /// Saves list of tasks to File by first Converting to JSON object
         /// </summary>
@@ -182,5 +195,6 @@ namespace TaskManager.ViewModels
                 }
             }
         }
+        #endregion
     }
 }

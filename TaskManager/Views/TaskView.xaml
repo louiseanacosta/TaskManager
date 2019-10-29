@@ -1,14 +1,19 @@
-﻿<Window x:Class="TaskManager.Views.TaskView"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:System="clr-namespace:System;assembly=mscorlib"
-        xmlns:cal="http://www.caliburnproject.org"
-        mc:Ignorable="d" WindowStartupLocation="CenterScreen" FontSize="14" FontFamily="Lucida Sans" FontWeight="Light" 
-        Title="Task Manager" Height="450" Width="500" ResizeMode="NoResize"
-        cal:Message.Attach="[Event Closing] = [Action SaveToFile()]" Icon="..\images\logo.png">
-
+﻿ <!--
+Task Manager
+Author: Louise Acosta
+Date: October 28, 2019
+-->
+ 
+<Window x:Class="TaskManager.Views.TaskView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:System="clr-namespace:System;assembly=mscorlib"
+    xmlns:cal="http://www.caliburnproject.org"
+    mc:Ignorable="d" WindowStartupLocation="CenterScreen" FontSize="14" FontFamily="Lucida Sans" FontWeight="Light" 
+    Title="Task Manager" Height="450" Width="500" ResizeMode="NoResize"
+    cal:Message.Attach="[Event Closing] = [Action SaveToFile()]" Icon="..\images\logo.png">
 
     <Grid Background="#FFBABCC8">
         <Grid.ColumnDefinitions>
@@ -60,7 +65,7 @@
                   cal:Message.Attach="[Event CellEditEnding]=[Action SaveToFile()]" 
                   MaxWidth="460" ColumnWidth="*"
                   >
-          
+            <!--Cell styling: remove default highlight color-->
             <DataGrid.CellStyle>
                 <Style TargetType="{x:Type DataGridCell}">
                     <Style.Triggers>
@@ -82,9 +87,11 @@
                     </Style.Triggers>
                 </Style>
             </DataGrid.CellStyle>
-            <!--Row color change on status: 
-                Complete: Green
-                Incomplete: Red-->
+            
+            <!--Row Styling:
+                Row color change on status: 
+                    Complete: Green
+                    Incomplete: Red-->
             <DataGrid.RowStyle>
                 <Style TargetType="DataGridRow">
                     <Style.Triggers>
@@ -97,7 +104,7 @@
                     </Style.Triggers>
                 </Style>
             </DataGrid.RowStyle>
-            
+            <!--Columns-->
             <DataGrid.Columns>
                 <DataGridTemplateColumn Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
